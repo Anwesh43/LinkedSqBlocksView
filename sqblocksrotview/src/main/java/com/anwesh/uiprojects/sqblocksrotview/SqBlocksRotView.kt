@@ -182,4 +182,26 @@ class SqBlocksRotView(ctx : Context) : View(ctx) {
             curr.startUpdating(cb)
         }
     }
+
+    data class Renderer(var view : SqBlocksRotView) {
+
+        private val animator : Animator = Animator(view)
+        private val sbr : SqBlocksRot = SqBlocksRot(0)
+
+        fun render(canvas : Canvas, paint : Paint) {
+            canvas.drawColor(backColor)
+            sbr.draw(canvas, paint)
+            animator.animate {
+                sbr.update {i, scl ->
+                    animator.stop()
+                }
+            }
+        }
+
+        fun handleTap() {
+            sbr.startUpdating {
+                animator.start()
+            }
+        }
+    }
 }
