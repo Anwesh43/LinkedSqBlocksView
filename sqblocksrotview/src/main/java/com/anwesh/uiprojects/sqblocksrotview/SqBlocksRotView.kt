@@ -205,4 +205,13 @@ class SqBlocksRotView(ctx : Context) : View(ctx) {
             }
         }
     }
+
+    companion object {
+
+        fun create(activity : Activity) : SqBlocksRotView {
+            val view : SqBlocksRotView = SqBlocksRotView(activity)
+            activity.setContentView(view)
+            return view 
+        }
+    }
 }
