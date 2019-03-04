@@ -20,6 +20,7 @@ val scDiv : Double = 0.51
 val sizeFactor : Float = 2.9f
 val foreColor : Int = Color.parseColor("#4527A0")
 val backColor : Int = Color.parseColor("#212121")
+val delay : Long = 20
 
 fun Int.inverse() : Float = 1f / this
 fun Float.maxScale(i : Int, n : Int) : Float = Math.max(0f, this - i * n.inverse())
@@ -37,14 +38,14 @@ fun Canvas.drawSBRNode(i : Int, scale : Float, paint : Paint) {
     val size : Float = gap / sizeFactor
     paint.color = foreColor
     val xGap : Float = (2 * size) / (squares)
-    val sqSize : Float = xGap / 2
     save()
     translate(w / 2, gap * (i + 1))
     rotate(90f * sc2)
     for (j in 0..(squares - 1)) {
+        val sqSize : Float = (xGap * sc1.divideScale(j, squares) * 2) / 3
         val pos : Float = xGap * j + sqSize / 2
         save()
-        translate(pos, pos)
+        translate(-size + pos, -size + pos)
         drawRect(RectF(-sqSize / 2, -sqSize / 2, sqSize / 2, sqSize / 2), paint)
         restore()
     }
@@ -95,7 +96,7 @@ class SqBlocksRotView(ctx : Context) : View(ctx) {
             if (animated) {
                 cb()
                 try {
-                    Thread.sleep(50)
+                    Thread.sleep(delay)
                     view.invalidate()
                 } catch(ex : Exception) {
 
@@ -135,7 +136,7 @@ class SqBlocksRotView(ctx : Context) : View(ctx) {
 
         fun draw(canvas : Canvas, paint : Paint) {
             canvas.drawSBRNode(i, state.scale, paint)
-            next?.draw(canvas, paint)
+            prev?.draw(canvas, paint)
         }
 
         fun update(cb : (Int, Float) -> Unit) {
@@ -163,11 +164,10 @@ class SqBlocksRotView(ctx : Context) : View(ctx) {
 
     data class SqBlocksRot(var i : Int) {
         private var dir : Int = 1
-        private val root : SBRNode = SBRNode(0)
-        private var curr : SBRNode = root
+        private var curr : SBRNode = SBRNode(0)
 
         fun draw(canvas : Canvas, paint : Paint) {
-            root.draw(canvas, paint)
+            curr.draw(canvas, paint)
         }
 
         fun update(cb : (Int, Float) -> Unit) {
@@ -211,7 +211,7 @@ class SqBlocksRotView(ctx : Context) : View(ctx) {
         fun create(activity : Activity) : SqBlocksRotView {
             val view : SqBlocksRotView = SqBlocksRotView(activity)
             activity.setContentView(view)
-            return view 
+            return view
         }
     }
 }
